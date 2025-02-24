@@ -27,7 +27,7 @@ function validateStatus(status) {
 
 var instance = axios.create({
     timeout: 8000,
-    baseURL: process.env.NODE_ENV === 'production' ? '/' : '/api',
+    baseURL: process.env.NODE_ENV === 'production' ? `${location.pathname}` : '/api', // '/'
     validateStatus
 })
 

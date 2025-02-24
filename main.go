@@ -20,9 +20,11 @@ import (
 var f embed.FS
 
 var (
+	pf         = flag.String("f", "/", "前缀")
 	port       = flag.Int("p", 5032, "服务运行端口")
 	v          = flag.Bool("v", false, "显示版本号")
 	authInfo   = flag.String("a", "", "开启账号密码登录验证, '-a user:pass'的格式传参")
+	prefix     string
 	timeout    int
 	savePass   bool
 	version    string
@@ -72,37 +74,46 @@ func staticRouter(router *gin.Engine) {
 		accountList := map[string]string{
 			username: password,
 		}
-		authorized := router.Group("/", gin.BasicAuth(accountList))
+		authorized := router.Group(prefix, gin.BasicAuth(accountList))
 		authorized.GET("", func(c *gin.Context) {
 			indexHTML, _ := f.ReadFile("web/dist/" + "index.html")
+			indexHTML = []byte(strings.Replace(string(indexHTML), "_PREFIX_", prefix, -1))
 			c.Writer.Write(indexHTML)
 		})
 	} else {
-		router.GET("/", func(c *gin.Context) {
+		router.GET(prefix, func(c *gin.Context) {
 			indexHTML, _ := f.ReadFile("web/dist/" + "index.html")
+			indexHTML = []byte(strings.Replace(string(indexHTML), "_PREFIX_", prefix, -1))
 			c.Writer.Write(indexHTML)
 		})
 	}
 	staticFs, _ := fs.Sub(f, "web/dist/static")
-	router.StaticFS("/static", http.FS(staticFs))
+	router.StaticFS(prefix+"/static", http.FS(staticFs))
 }
 
 func main() {
 	server := gin.Default()
 	server.SetTrustedProxies(nil)
 	server.Use(gzip.Gzip(gzip.DefaultCompression))
+	if len(*pf) == 0 {
+		*pf = "/"
+	}
+	if (*pf)[0] != '/' {
+		*pf = "/" + *pf
+	}
+	prefix = *pf
 	staticRouter(server)
-	server.GET("/term", func(c *gin.Context) {
+	server.GET(prefix+"/term", func(c *gin.Context) {
 		controller.TermWs(c, time.Duration(timeout)*time.Minute)
 	})
-	server.GET("/check", func(c *gin.Context) {
+	server.GET(prefix+"/check", func(c *gin.Context) {
 		responseBody := controller.CheckSSH(c)
 		responseBody.Data = map[string]interface{}{
 			"savePass": savePass,
 		}
 		c.JSON(200, responseBody)
 	})
-	file := server.Group("/file")
+	file := server.Group(prefix + "/file")
 	{
 		file.GET("/list", func(c *gin.Context) {
 			c.JSON(200, controller.FileList(c))

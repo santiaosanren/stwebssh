@@ -48,7 +48,7 @@ export default {
             this.resizeTerm(termWeb)
             const sshReq = this.$store.getters.sshReq
             this.close()
-            const prefix = process.env.NODE_ENV === 'production' ? '' : '/ws'
+            const prefix = process.env.NODE_ENV === 'production' ? '_PREFIX_' : '/ws'
             const fitAddon = new FitAddon()
             this.term = new Terminal()
             this.term.loadAddon(fitAddon)
@@ -74,7 +74,8 @@ export default {
                 closeTip = 'Connection timed out!'
             }
             // open websocket
-            this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${prefix}/term?sshInfo=${sshReq}&rows=${this.term.rows}&cols=${this.term.cols}&closeTip=${closeTip}`)
+			var loc = `${location.href}`.replaceAll('http://', '').replaceAll('https://', '')
+            this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${loc}/term?sshInfo=${sshReq}&rows=${this.term.rows}&cols=${this.term.cols}&closeTip=${closeTip}`)
             this.ws.onopen = () => {
                 console.log(Date(), 'onopen')
                 self.connected()

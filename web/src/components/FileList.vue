@@ -80,7 +80,7 @@ export default {
     computed: {
         ...mapState(['currentTab']),
         uploadUrl: () => {
-            return `${process.env.NODE_ENV === 'production' ? `${location.origin}` : 'api'}/file/upload`
+            return `${process.env.NODE_ENV === 'production' ? `${location.href}` : 'api'}/file/upload`
         },
         uploadData: function() {
             return {
@@ -159,7 +159,8 @@ export default {
             e.percent = e.percent / 2
             f.percentage = f.percentage / 2
             if (e.percent === 50) {
-                const ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${f.uid}`)
+                var loc = `${location.href}`.replaceAll('http://', '').replaceAll('https://', '')
+                const ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${loc}/file/progress?id=${f.uid}`)
                 ws.onmessage = e1 => {
                     f.percentage = (f.size + Number(e1.data)) / (f.size * 2) * 100
                 }
@@ -218,7 +219,7 @@ export default {
             this.getFileList()
         },
         downloadFile() {
-            const prefix = process.env.NODE_ENV === 'production' ? `${location.origin}` : 'api'
+            const prefix = process.env.NODE_ENV === 'production' ? `${location.href}` : 'api'
             const downloadUrl = `${prefix}/file/download?path=${this.downloadFilePath}&sshInfo=${this.$store.getters.sshReq}`
             window.open(downloadUrl)
         },

@@ -1,3 +1,15 @@
+forked from Jrohy/webssh
+
+做了一些修改，比如支持在启动命令中添加url前缀。
+与原版使用了不同的go环境
+自用，不保证更新。
+若有许可证相关遗漏请通知我。
+
+made some modification, like support add url prefix in start command.
+Used a different go environment than the original project
+self use, update not guaranteed.
+notify me if I miss any license thing.
+
 # webssh
 ![](https://img.shields.io/github/v/release/Jrohy/webssh.svg) 
 ![](https://img.shields.io/docker/pulls/jrohy/webssh.svg) 
@@ -13,6 +25,8 @@
 ## 命令行
 ```
 Usage of ./webssh_linux_amd64:
+  -f string
+        网站url前缀(prefix)
   -a string
         开启账号密码登录验证, '-a user:pass'的格式传参
   -p int
@@ -31,11 +45,11 @@ Usage of ./webssh_linux_amd64:
 ```
 
 ## 运行
-1. 下载[releases](https://github.com/Jrohy/webssh/releases)里不同平台的包来执行即可  
+1. 下载releases里不同平台的包来执行即可
 
 2. docker运行:  
     ```
-    docker run -d --net=host --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
+    docker run -d --net=host --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai -e savePass=true jrohy/webssh
     ```
     支持添加的环境变量:
     ```
