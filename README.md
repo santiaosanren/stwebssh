@@ -1,13 +1,19 @@
-forked from Jrohy/webssh
+forked from Jrohy/webssh 
 
 做了一些修改，比如支持在启动命令中添加url前缀。
+
 与原版使用了不同的go环境
+
 自用，不保证更新。
+
 若有许可证相关遗漏请通知我。
 
 made some modification, like support add url prefix in start command.
-Used a different go environment than the original project
+
+Used a different go environment than the original project.
+
 self use, update not guaranteed.
+
 notify me if I miss any license thing.
 
 # webssh
